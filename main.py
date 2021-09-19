@@ -11,6 +11,7 @@ app = FastAPI()
 def get_api_version(version):
     return f'Your api version = {version}'
 
+
 class TaskManager:
     __tasks = []
 
@@ -25,7 +26,6 @@ class TaskManager:
             return result
 
         return '\n'.join(map(task_to_string, self.__tasks))
-
 
 
 task_manager = TaskManager()
