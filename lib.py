@@ -29,7 +29,7 @@ class TaskManager:
         return '\n'.join(map(str, self.__tasks))
 
 
-class TaskProgress(BaseModel):
+class СompletedTaskProgress(BaseModel):
     task_name: str
     progress: float
     spent_hours: Optional[float] = None

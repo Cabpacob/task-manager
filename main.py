@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from starlette import status
 from starlette.responses import Response
-from lib import TaskManager, TaskProgress
+from lib import TaskManager, СompletedTaskProgress
 import time
 
 
