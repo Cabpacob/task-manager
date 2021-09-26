@@ -18,7 +18,7 @@ class TaskManager:
 
             def __str__(self):
                 result = f'You did task {self.name} by {int(self.progress * 100)}% at {time.ctime(self.current_time)}'
-                if task[2] is not None:
+                if self.spent_hours is not None:
                     result += f' and spent {self.spent_hours} hours'
                 return result
 
