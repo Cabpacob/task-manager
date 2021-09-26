@@ -16,8 +16,10 @@ class TaskManager:
                 self.spent_hours = spent_hours
                 self.current_time = current_time
 
-            def __str__(self):
-                result = f'You did task {self.name} by {int(self.progress * 100)}% at {time.ctime(self.current_time)}'
+            def __str__(self, without_timestamp):
+                result = f'You did task {self.name} by {int(self.progress * 100)}%'
+                if not without_timestamp:
+                    result += f' at {time.ctime(self.current_time)}'
                 if self.spent_hours is not None:
                     result += f' and spent {self.spent_hours} hours'
                 return result
@@ -25,11 +27,11 @@ class TaskManager:
 
         self.__tasks.append(Task(task_name, progress, spent_hours, time.time()))
 
-    def get_work(self):
-        return '\n'.join(map(str, self.__tasks))
+    def get_work(self, without_timestamp):
+        return '\n'.join(map(lambda task: str(task, without_timestamp), self.__tasks))
 
 
-class СompletedTaskProgress(BaseModel):
+class TaskProgress(BaseModel):
     task_name: str
     progress: float
     spent_hours: Optional[float] = None
