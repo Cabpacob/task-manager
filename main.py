@@ -14,8 +14,8 @@ def get_api_version(version):
     return f'Your api version = {version}'
 
 
-def get_work(without_timestamp=False):
-    return task_manager.get_work(without_timestamp)
+def get_work():
+    return task_manager.get_work()
 
 
 @app.get('/tasks')
@@ -34,3 +34,22 @@ def post_register_task(data: TaskProgress):
     except Exception as e:
         return Response(f'Raised exception {e}', status_code=status.HTTP_400_BAD_REQUEST)
     return Response('Task successfully added', status_code=status.HTTP_200_OK)
+
+
+def task_progress(task_name):
+    progress = None
+    try:
+        progress = task_manager.get_task_progress(task_name)
+    except Exception as e:
+        return 'Wrong task_name'
+    return f'Task progress = {progress}'
+
+
+@app.get('/task/{name}')
+def get_task_progress(name):
+    return task_progress(name)
+
+
+@app.delete('/clear-tasks')
+def delete_tasks():
+    task_manager.clear()
