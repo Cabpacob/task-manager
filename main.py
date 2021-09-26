@@ -20,7 +20,7 @@ def get_tasks():
 
 
 @app.post('/register-task')
-def get_task_progress(data: TaskProgress):
+def post_register_task(data: TaskProgress):
     try:
         task_manager.add_task(data.task_name, data.progress, data.spent_hours)
     except Exception as e:
