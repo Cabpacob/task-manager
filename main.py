@@ -43,7 +43,7 @@ class TaskProgress(BaseModel):
 
 
 @app.post('/register-task')
-def get_strange_data(data: TaskProgress):
+def get_task_progress(data: TaskProgress):
     if data.progress < 0 or data.progress > 1:
         return Response('Wrong progress, it must be betwen 0 and 1', status_code=status.HTTP_400_BAD_REQUEST)
 
