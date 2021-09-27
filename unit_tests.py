@@ -118,3 +118,31 @@ def test_clear_with_get_work():
 
     assert tm.get_work() == ''
 
+
+def test_empty_size():
+    tm = TaskManager()
+
+    assert tm.size() == 0
+
+
+def test_size():
+    tm = TaskManager()
+
+    tm.add_task('Do homework', 0.8, 2, timestamp=False)
+    tm.add_task('Do homework', 0.1, 2, timestamp=False)
+    tm.add_task('Do tests', 0.6, 0.9, timestamp=False)
+    tm.add_task('Do something else', 0.2, timestamp=False)
+
+    assert tm.size() == 4
+
+def test_size_with_clear():
+    tm = TaskManager()
+
+    tm.add_task('Do homework', 0.8, 2, timestamp=False)
+    tm.add_task('Do homework', 0.1, 2, timestamp=False)
+    tm.add_task('Do tests', 0.6, 0.9, timestamp=False)
+    tm.add_task('Do something else', 0.2, timestamp=False)
+
+    tm.clear()
+
+    assert tm.size() == 0
