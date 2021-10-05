@@ -1,61 +1,119 @@
-import requests
+from lib import TaskManager
+import pytest
+import random
 
 
-endpoint = 'http://localhost:8000/'
+def must_except(function):
+    try:
+        function()
+    except:
+        pass
+    else:
+        assert False, 'Function must except'
 
 
-def get_response(path):
-    response = requests.get(f'{endpoint}{path}')
+def test_task_manager_pipeline():
+    tm = TaskManager()
 
-    assert response.status_code == 200
+    tm.add_task('Buy a bread', 0, timestamp=False)
+    tm.add_task('Turn off the iron', 1, timestamp=False)
 
-    return response.text
+    answer = [
+        'You did task Buy a bread by 0%',
+        'You did task Turn off the iron by 100%'
+    ]
 
+    assert tm.size() == 2
+    assert tm.get_task_progress('Buy a bread') == 0
+    assert tm.get_work() == '\n'.join(answer)
 
-def post_response(path, data):
-    response = requests.post(f'{endpoint}{path}', json=data)
+    tm.clear()
 
-    assert response.status_code == 200
+    assert tm.size() == 0
+    must_except(lambda: tm.get_task_progress('Buy a bread'))
+    assert tm.get_work() == ''
 
-    return response.text
+    tm.add_task('Buy a bread', 1, timestamp=False)
 
+    answer = [
+        'You did task Buy a bread by 100%',
+    ]
 
-def delete_response(path):
-    response = requests.delete(f'{endpoint}{path}')
+    assert tm.size() == 1
+    assert tm.get_task_progress('Buy a bread') == 1
+    assert tm.get_work() == '\n'.join(answer)
 
-    assert response.status_code == 200
+    tm.clear()
 
-    return response.text
+    tm.add_task('Buy a bread', 1, timestamp=False)
+    tm.add_task('Buy a bread', 0.5, timestamp=False)
 
-
-def test_add_tasks():
-    post_response('register-task', {'task_name': 'Do homework', 'progress': 0.9})
-    post_response('register-task', {'task_name': 'Feed the cat', 'progress': 1})
-    post_response('register-task', {'task_name': 'Make a coffee', 'progress': 0})
-
-
-def test_get_work():
-    post_response('register-task', {'task_name': 'Do homework', 'progress': 0.9})
-    post_response('register-task', {'task_name': 'Feed the cat', 'progress': 1})
-
-    get_response('tasks')
-
-    post_response('register-task', {'task_name': 'Make a coffee', 'progress': 0})
-
-    get_response('tasks')
+    must_except(lambda: tm.get_task_progress('But a bread'))
 
 
-def test_delete_tasks():
-    post_response('register-task', {'task_name': 'Do homework', 'progress': 0.9})
-    post_response('register-task', {'task_name': 'Feed the cat', 'progress': 1})
+def test_performance_with_clear():
+    tm = TaskManager()
 
-    get_response('tasks')
+    N = 5 * 100000
 
-    delete_response('clear-tasks')
+    def add_task():
+        size = tm.size()
+        tm.add_task(f'Task number {size + 1}', 0.4, 10)
 
-    post_response('register-task', {'task_name': 'Make a coffee', 'progress': 0})
+    def get_work():
+        tm.get_work()
 
-    get_response('tasks')
+    def get_task_progress():
+        size = tm.size()
 
-    delete_response('clear-tasks')
-    delete_response('clear-tasks')
+        if size == 0:
+            must_except(lambda: tm.get_task_progress('Task number 0'))
+        else:
+            tm.get_task_progress(f'Task number {random.randint(1, size)}')
+
+    def clear():
+        tm.clear()
+
+    command_list = [
+        add_task,
+        get_work,
+        get_task_progress,
+        clear
+    ]
+
+    for _ in range(N):
+        command_number = len(command_list)
+        command = command_list[random.randint(0, command_number - 1)]
+        command()
+
+
+def test_performance_without_clear():
+    tm = TaskManager()
+
+    N = 5 * 1000
+
+    def add_task():
+        size = tm.size()
+        tm.add_task(f'Task number {size + 1}', 0.4, 10)
+
+    def get_work():
+        tm.get_work()
+
+    def get_task_progress():
+        size = tm.size()
+
+        if size == 0:
+            must_except(lambda: tm.get_task_progress('Task number 0'))
+        else:
+            tm.get_task_progress(f'Task number {random.randint(1, size)}')
+
+    command_list = [
+        add_task,
+        get_work,
+        get_task_progress,
+    ]
+
+    for _ in range(N):
+        command_number = len(command_list)
+        command = command_list[random.randint(0, command_number - 1)]
+        command()

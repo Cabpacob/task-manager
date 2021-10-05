@@ -7,7 +7,6 @@ class TaskManager:
     def __init__(self):
         self.__tasks = []
 
-
     def add_task(self, task_name, progress, spent_hours=None, timestamp=True):
         class Task:
             def __init__(self, name, progress, spent_hours, current_time):
@@ -43,6 +42,9 @@ class TaskManager:
 
     def clear(self):
         self.__tasks = []
+
+    def size(self):
+        return len(self.__tasks)
 
 
 class TaskProgress(BaseModel):
