@@ -1,12 +1,34 @@
 from fastapi import FastAPI
 from starlette import status
 from starlette.responses import Response
+from starlette.graphql import GraphQLApp
 from lib import TaskManager, TaskProgress
 import time
+import graphene
 
 
 app = FastAPI()
 task_manager = TaskManager()
+
+
+class Person(graphene.ObjectType):
+    name = graphene.String()
+
+
+class Task(graphene.ObjectType):
+    id = graphene.ID()
+    name = graphene.String()
+    responsible = graphene.Field(Person)
+
+
+class Query(graphene.ObjectType):
+    task = graphene.Field(Task)
+
+    def resolve_task(self, info):
+        return Task(id=228, name='Do hw', responsible=Person(name='me'))
+
+
+app.add_route("/graphql", GraphQLApp(schema=graphene.Schema(query=Query)))
 
 
 @app.get('/api/{version}')
