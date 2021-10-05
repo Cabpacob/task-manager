@@ -2,3 +2,4 @@ fastapi
 starlette
 pydantic
 typing-extensions
+graphene
